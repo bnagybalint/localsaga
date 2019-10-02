@@ -1,5 +1,5 @@
-from pysaga import Task, FunctionTask
-from pysaga import LocalSaga, SagaFailed
+from pysaga import Task, CallableTask
+from pysaga import LocalSaga, SagaFailed, CompensationFailed
 
 def update_db(ctx):
 	new_id = '02823148dfe20'
@@ -32,18 +32,25 @@ if __name__ == '__main__':
 		saga.execute(WriteFileTask())
 
 		# saga step using functions
-		saga.execute(FunctionTask(update_db, compensate_db), name='Update DB')
+		saga.execute(CallableTask(update_db, compensate_db), name='Update DB')
 
 		# saga step with no compensate
-		saga.execute(FunctionTask(dummy))
+		saga.execute(CallableTask(dummy))
 
 		# saga step to fail at compensation
-		saga.execute(FunctionTask(dummy, failure))
+		#saga.execute(CallableTask(dummy, failure))
 		# saga step to fail
-		saga.execute(FunctionTask(failure, dummy))
+		#saga.execute(CallableTask(failure, dummy))
 		
 		print('Saga succeeded!')
+
+		saga.compensate()
+
+		print('Saga compensated anyway.')
 		
 	except SagaFailed as e:
 		print('Saga failed!')
+		print('  reason: {}'.format(str(e)))
+	except CompensationFailed as e:
+		print('Saga compensation failed!')
 		print('  reason: {}'.format(str(e)))

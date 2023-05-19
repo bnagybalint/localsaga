@@ -1,7 +1,7 @@
 from typing import Any
 from dataclasses import dataclass
 
-from pysaga import (
+from localsaga import (
     CallableTask,
     Saga,
     SagaStatus,

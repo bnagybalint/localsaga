@@ -1,4 +1,4 @@
-# pysaga
+# localsaga
 
 Minimal Saga pattern implementation for local tasks
 
@@ -16,13 +16,13 @@ The Saga engine will execute the configured tasks sequentially, until the saga f
 
 ```Python
 from dataclasses import dataclass
-import pysaga
+import localsaga
 
 @dataclass
 class SharedCounter:
     value: int
 
-class MyAdder(pysaga.Task):
+class MyAdder(localsaga.Task):
     def __init__(self, counter: SharedCounter):
         self.counter = counter
     def execute(self, ctx):
@@ -31,7 +31,7 @@ class MyAdder(pysaga.Task):
         self.counter -= 1
 
 counter = SharedCounter(value=42)
-saga = pysaga.Saga()
+saga = localsaga.Saga()
 saga.add_task(MyAdder(counter=counter))
 saga.run()
 
@@ -48,22 +48,22 @@ One important note here is that the failing task will not be compensated, theref
 
 ```Python
 from dataclasses import dataclass
-import pysaga
+import localsaga
 
-class PrinterTask(pysaga.Task):
+class PrinterTask(localsaga.Task):
     def execute(self, ctx):
         print("execute")
     def compensate(self, ctx):
         print("compensate")
 
-class FailTask(pysaga.Task):
+class FailTask(localsaga.Task):
     def execute(self, ctx):
         print("fail!")
         raise Exception("AAAAAH!")
     def compensate(self, ctx):
         print("this method is not called")
 
-saga = pysaga.Saga()
+saga = localsaga.Saga()
 saga.add_task(PrinterTask())
 saga.add_task(FailTask())
 saga.run()
@@ -81,13 +81,13 @@ See section [Reusing task objects](## Reusing task objects) for more information
 ```Python
 from dataclasses import dataclass
 import uuid
-import pysaga
+import localsaga
 
 @dataclass
 class MyTokenContext:
     token: str = None
 
-class MyTokenTask(pysaga.Task):
+class MyTokenTask(localsaga.Task):
     def execute(self, ctx: MyTokenContext):
         ctx.token = uuid.uuid4()
         print(f"Adding token {ctx.token}")
@@ -98,11 +98,11 @@ class MyTokenTask(pysaga.Task):
     def create_context(self) -> MyTokenContext:
         return MyTokenContext()
 
-class FailTask(pysaga.Task):
+class FailTask(localsaga.Task):
     def execute(self, ctx):
         raise Exception("Panic!")
 
-saga = pysaga.Saga()
+saga = localsaga.Saga()
 saga.add_task(MyTokenTask())
 saga.add_task(FailTask())
 saga.run()
@@ -115,13 +115,13 @@ It is possible to reuse task objects in a different or the same Saga execution:
 ```Python
 from dataclasses import dataclass
 import uuid
-import pysaga
+import localsaga
 
 @dataclass
 class SummonContext:
     id: str = None
 
-class SummonTask(pysaga.Task):
+class SummonTask(localsaga.Task):
     def __init__(self, msg: str):
         self.msg = msg
     def execute(self, ctx: SummonContext):
@@ -134,7 +134,7 @@ class SummonTask(pysaga.Task):
 
 task = SummonTask("Biggy Smalls")
 
-saga = pysaga.Saga()
+saga = localsaga.Saga()
 saga.add_task(task)
 saga.add_task(task)
 saga.add_task(task)

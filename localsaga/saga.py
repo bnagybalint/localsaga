@@ -3,7 +3,7 @@ import enum
 from dataclasses import dataclass
 from typing import List
 
-from pysaga.task import Task, TaskContext
+from localsaga.task import Task, TaskContext
 
 
 class SagaStatus(enum.Enum):

@@ -18,4 +18,4 @@ jobs:
         python -m pip install -r requirements-dev.txt
     - name: Run Python unit tests
       run: |
-        python -m pytest tests/utest
+        python -m pytest utest
